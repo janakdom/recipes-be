@@ -1,4 +1,4 @@
-package cz.st52530.recipes
+package cz.st52530.recipes.controller
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
