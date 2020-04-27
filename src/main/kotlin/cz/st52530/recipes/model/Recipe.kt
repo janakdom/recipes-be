@@ -35,5 +35,13 @@ data class Recipe(
                 nullable = false
         )
         @ManyToOne
-        val author: User
+        val author: User,
+
+        @ManyToMany
+        @JoinTable(
+                name = "recipe_category",
+                joinColumns = [JoinColumn(name = "recipe_id", referencedColumnName = "id")],
+                inverseJoinColumns = [JoinColumn(name = "category_id", referencedColumnName = "id")]
+        )
+        val categories: Set<Category>
 ) : BaseModel()
