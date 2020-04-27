@@ -1,11 +1,11 @@
-package cz.st52530.recipes.model
+package cz.st52530.recipes.model.database
 
-import cz.st52530.recipes.model.base.BaseModel
+import cz.st52530.recipes.model.database.base.BaseModel
 import javax.persistence.Column
 import javax.persistence.Entity
 
-@Entity(name = "category")
-data class Category(
+@Entity(name = "ingredient")
+data class Ingredient(
         @Column(
                 nullable = false,
                 length = 45,
