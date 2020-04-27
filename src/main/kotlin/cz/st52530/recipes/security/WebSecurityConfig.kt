@@ -52,10 +52,11 @@ class WebSecurityConfig(
     override fun configure(httpSecurity: HttpSecurity) {
         // We don't need CSRF for this example
         httpSecurity.csrf().disable()
+                .authorizeRequests()
                 // dont authenticate this particular request
-                .authorizeRequests().antMatchers("/api/authenticate").permitAll().anyRequest()
+                .antMatchers("/api/authenticate").permitAll()
                 // all other requests need to be authenticated
-                .authenticated().and().exceptionHandling()
+                .anyRequest().authenticated().and().exceptionHandling()
                 // make sure we use stateless session; session won't be used to store user's state.
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
