@@ -1,7 +1,6 @@
-package cz.st52530.recipes.model.id
+package cz.st52530.recipes.model.database.id
 
 import java.io.Serializable
-import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.validation.constraints.NotNull
 

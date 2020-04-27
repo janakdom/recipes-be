@@ -1,6 +1,6 @@
-package cz.st52530.recipes.model
+package cz.st52530.recipes.model.database
 
-import cz.st52530.recipes.model.base.BaseModel
+import cz.st52530.recipes.model.database.base.BaseModel
 import java.util.*
 import javax.persistence.*
 

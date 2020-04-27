@@ -1,4 +1,4 @@
-package cz.st52530.recipes.model.base
+package cz.st52530.recipes.model.database.base
 
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType

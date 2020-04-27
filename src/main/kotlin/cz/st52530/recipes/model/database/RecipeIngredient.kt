@@ -1,6 +1,6 @@
-package cz.st52530.recipes.model
+package cz.st52530.recipes.model.database
 
-import cz.st52530.recipes.model.id.RecipeIngredientIdentity
+import cz.st52530.recipes.model.database.id.RecipeIngredientIdentity
 import java.io.Serializable
 import javax.persistence.*
 
