@@ -18,9 +18,9 @@ data class Recipe(
         )
         val description: String,
 
+        @Lob
         @Column(
-                nullable = false,
-                columnDefinition = "TEXT"
+                nullable = false
         )
         val instructions: String,
 

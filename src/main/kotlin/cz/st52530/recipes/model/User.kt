@@ -15,7 +15,8 @@ data class User(
 
         @Column(
                 nullable = false,
-                length = 60
+                length = 60,
+                columnDefinition = "CHAR"
         )
         var password: String,
 
