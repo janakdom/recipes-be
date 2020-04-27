@@ -50,11 +50,20 @@ class WebSecurityConfig(
 
     @Throws(Exception::class)
     override fun configure(httpSecurity: HttpSecurity) {
+        val swaggerPaths = arrayOf(
+                "/v3/api-docs/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+                "/swagger"
+        )
         // We don't need CSRF for this example
         httpSecurity.csrf().disable()
                 .authorizeRequests()
                 // dont authenticate this particular request
-                .antMatchers("/api/authenticate").permitAll()
+                .antMatchers(
+                        "/api/authenticate",
+                        *swaggerPaths
+                ).permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().exceptionHandling()
                 // make sure we use stateless session; session won't be used to store user's state.
