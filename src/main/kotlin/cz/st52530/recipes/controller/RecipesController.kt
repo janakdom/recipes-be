@@ -7,10 +7,8 @@ import cz.st52530.recipes.service.IRecipeService
 import cz.st52530.recipes.service.IUserService
 import cz.st52530.recipes.util.JwtTokenUtil
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/recipes/")
@@ -27,5 +25,21 @@ class RecipesController(
         val user = userService.getUserByUsername(username)
 
         return recipesService.getByUser(user)
+    }
+
+    @GetMapping("{id}")
+    fun getRecipe(
+            @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
+            @PathVariable("id") id: Int
+    ): Recipe {
+        val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
+        val user = userService.getUserByUsername(username)
+        val recipe = recipesService.getById(id)
+
+        if (recipe.author.id != user.id) {
+            throw AccessDeniedException("Not allowed to read this recipe!")
+        }
+
+        return recipe
     }
 }
