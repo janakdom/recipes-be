@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS `recipes`.`recipe` (
   `description` VARCHAR(1000) NOT NULL,
   `created_at` DATETIME NOT NULL,
   `author_id` INT NOT NULL,
+  `preparation_time` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_recipe_user_idx` (`author_id` ASC),
