@@ -18,6 +18,13 @@ data class Recipe(
         )
         val description: String,
 
+        @Column(
+                nullable = false,
+                length = 45,
+                name = "preparation_time"
+        )
+        val preparationTime: String,
+
         @Lob
         @Column(
                 nullable = false
