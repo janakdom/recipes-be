@@ -26,6 +26,8 @@ class JwtRequestFilter(
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
+        logger.info("Incoming (${request.method}) request: ${request.requestURI}")
+
         val authorizationHeader = request.getHeader("Authorization")
         val (username, token) = parseUsername(authorizationHeader)
 
