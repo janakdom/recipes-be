@@ -1,5 +1,6 @@
 package cz.st52530.recipes.model.database
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import cz.st52530.recipes.model.database.base.BaseModel
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -18,6 +19,7 @@ data class User(
                 length = 60,
                 columnDefinition = "CHAR"
         )
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Hide passwords from API.
         var password: String,
 
         @Column(

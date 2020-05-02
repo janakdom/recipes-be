@@ -3,7 +3,6 @@ package cz.st52530.recipes.security
 import cz.st52530.recipes.service.IUserService
 import cz.st52530.recipes.util.JwtTokenUtil
 import io.jsonwebtoken.ExpiredJwtException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -18,9 +17,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 class JwtRequestFilter(
-        @Autowired
         private val userService: IUserService,
-        @Autowired
         private val jwtTokenUtil: JwtTokenUtil
 ) : OncePerRequestFilter() {
 
@@ -28,7 +25,7 @@ class JwtRequestFilter(
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         logger.info("Incoming (${request.method}) request: ${request.requestURI}")
 
-        val authorizationHeader = request.getHeader("Authorization")
+        val authorizationHeader = request.getHeader(AUTHORIZATION_HEADER)
         val (username, token) = parseUsername(authorizationHeader)
 
         validateTokenAndUpdateContext(request, username, token)
@@ -42,7 +39,7 @@ class JwtRequestFilter(
     private fun parseUsername(authorizationHeader: String?): Pair<String?, String?> {
         // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token.
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            val token = authorizationHeader.substring(7)
+            val token = jwtTokenUtil.extractBareToken(authorizationHeader)
             try {
                 return Pair(jwtTokenUtil.getUsernameFromToken(token), token)
             } catch (e: IllegalArgumentException) {
@@ -78,5 +75,9 @@ class JwtRequestFilter(
                 SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
             }
         }
+    }
+
+    companion object {
+        const val AUTHORIZATION_HEADER = "Authorization"
     }
 }

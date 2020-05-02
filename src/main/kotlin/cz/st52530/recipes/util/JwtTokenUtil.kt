@@ -13,6 +13,16 @@ class JwtTokenUtil(
         @Value("\${jwt.secret}")
         private val secret: String
 ) {
+    /**
+     * Removes Bearer part of the token.
+     */
+    fun extractBareToken(token: String): String {
+        return if (token.startsWith("Bearer ")) {
+            token.substring(7)
+        } else {
+            token
+        }
+    }
 
     /**
      * Retrieve username from jwt token.
