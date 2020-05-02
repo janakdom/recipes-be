@@ -8,9 +8,9 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Table `recipes`.`user`
+-- Table `user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `recipes`.`user` (
+CREATE TABLE IF NOT EXISTS `user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
   `password` CHAR(60) NOT NULL,
@@ -22,9 +22,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `recipes`.`category`
+-- Table `category`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `recipes`.`category` (
+CREATE TABLE IF NOT EXISTS `category` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
@@ -34,9 +34,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `recipes`.`recipe`
+-- Table `recipe`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `recipes`.`recipe` (
+CREATE TABLE IF NOT EXISTS `recipe` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `instructions` LONGTEXT NOT NULL,
@@ -49,16 +49,16 @@ CREATE TABLE IF NOT EXISTS `recipes`.`recipe` (
   INDEX `fk_recipe_user_idx` (`author_id` ASC),
   CONSTRAINT `fk_recipe_user`
     FOREIGN KEY (`author_id`)
-    REFERENCES `recipes`.`user` (`id`)
+    REFERENCES `user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `recipes`.`ingredient`
+-- Table `ingredient`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `recipes`.`ingredient` (
+CREATE TABLE IF NOT EXISTS `ingredient` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
@@ -68,9 +68,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `recipes`.`recipe_ingredient`
+-- Table `recipe_ingredient`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `recipes`.`recipe_ingredient` (
+CREATE TABLE IF NOT EXISTS `recipe_ingredient` (
   `recipe_id` INT NOT NULL,
   `ingredient_id` INT NOT NULL,
   `amount` VARCHAR(45) NOT NULL,
@@ -79,21 +79,21 @@ CREATE TABLE IF NOT EXISTS `recipes`.`recipe_ingredient` (
   INDEX `fk_recipe_ingredient_ingredient1_idx` (`ingredient_id` ASC),
   CONSTRAINT `fk_recipe_ingredient_recipe1`
     FOREIGN KEY (`recipe_id`)
-    REFERENCES `recipes`.`recipe` (`id`)
+    REFERENCES `recipe` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_recipe_ingredient_ingredient1`
     FOREIGN KEY (`ingredient_id`)
-    REFERENCES `recipes`.`ingredient` (`id`)
+    REFERENCES `ingredient` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `recipes`.`recipe_category`
+-- Table `recipe_category`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `recipes`.`recipe_category` (
+CREATE TABLE IF NOT EXISTS `recipe_category` (
   `recipe_id` INT NOT NULL,
   `category_id` INT NOT NULL,
   INDEX `fk_recipe_category_recipe1_idx` (`recipe_id` ASC),
@@ -101,12 +101,12 @@ CREATE TABLE IF NOT EXISTS `recipes`.`recipe_category` (
   PRIMARY KEY (`recipe_id`, `category_id`),
   CONSTRAINT `fk_recipe_category_recipe1`
     FOREIGN KEY (`recipe_id`)
-    REFERENCES `recipes`.`recipe` (`id`)
+    REFERENCES `recipe` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_recipe_category_category1`
     FOREIGN KEY (`category_id`)
-    REFERENCES `recipes`.`category` (`id`)
+    REFERENCES `category` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
