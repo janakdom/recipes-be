@@ -2,6 +2,7 @@ package cz.st52530.recipes.controller
 
 import cz.st52530.recipes.config.SWAGGER_AUTH_KEY
 import cz.st52530.recipes.model.database.Recipe
+import cz.st52530.recipes.model.dto.RecipeDto
 import cz.st52530.recipes.security.JwtRequestFilter
 import cz.st52530.recipes.service.IRecipeService
 import cz.st52530.recipes.service.IUserService
@@ -41,5 +42,15 @@ class RecipesController(
         }
 
         return recipe
+    }
+
+    @PostMapping
+    fun addRecipe(
+            @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
+            @RequestBody body: RecipeDto
+    ) {
+        val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
+        val user = userService.getUserByUsername(username)
+        recipesService.addRecipe(body, user)
     }
 }
