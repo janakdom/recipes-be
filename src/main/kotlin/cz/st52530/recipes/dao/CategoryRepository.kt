@@ -11,7 +11,7 @@ interface CategoryRepository : JpaRepository<Category, Int> {
 
     fun findAllByIdIn(ids: Collection<Int>): List<Category>
 
-    @Query("UPDATE category SET name=?2 WHERE id = ?1")
     @Modifying
+    @Query("UPDATE category SET name=?2 WHERE id = ?1")
     fun updateName(id: Int, name: String): Category
 }
