@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/ingredients/")
+@RequestMapping("/api/ingredients")
 @SecurityRequirement(name = SWAGGER_AUTH_KEY)
 class IngredientController(
         private val ingredientService: IIngredientService
@@ -19,7 +19,7 @@ class IngredientController(
         return ingredientService.getAll()
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     fun getById(@PathVariable("id") id: Int): Ingredient {
         return ingredientService.getById(id)
     }
@@ -29,7 +29,7 @@ class IngredientController(
         return ingredientService.addIngredient(body)
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     fun updateCategory(
             @PathVariable("id") id: Int,
             @RequestBody body: UpdateIngredientDto
@@ -37,7 +37,7 @@ class IngredientController(
         return ingredientService.updateIngredient(id, body)
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     fun deleteCategory(
             @PathVariable("id") id: Int
     ) {

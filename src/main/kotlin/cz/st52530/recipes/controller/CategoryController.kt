@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/categories/")
+@RequestMapping("/api/categories")
 @SecurityRequirement(name = SWAGGER_AUTH_KEY)
 class CategoryController(
         private val categoryService: ICategoryService
@@ -19,7 +19,7 @@ class CategoryController(
         return categoryService.getAll()
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     fun getById(@PathVariable("id") id: Int): Category {
         return categoryService.getById(id)
     }
@@ -29,7 +29,7 @@ class CategoryController(
         return categoryService.addCategory(body)
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     fun updateCategory(
             @PathVariable("id") id: Int,
             @RequestBody body: UpdateCategoryDto
@@ -37,7 +37,7 @@ class CategoryController(
         return categoryService.updateCategory(id, body)
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     fun deleteCategory(
             @PathVariable("id") id: Int
     ) {

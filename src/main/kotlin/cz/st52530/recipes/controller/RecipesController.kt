@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/recipes/")
+@RequestMapping("/api/recipes")
 @SecurityRequirement(name = SWAGGER_AUTH_KEY)
 class RecipesController(
         private val userService: IUserService,
@@ -27,7 +27,7 @@ class RecipesController(
         return recipesService.getByUser(user)
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     fun getRecipe(
             @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
             @PathVariable("id") id: Int
@@ -47,7 +47,7 @@ class RecipesController(
         return recipesService.addRecipe(body, user)
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     fun updateRecipe(
             @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
             @RequestBody body: UpdateRecipeDto,
@@ -58,7 +58,7 @@ class RecipesController(
         return recipesService.updateRecipe(id, body, user)
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     fun deleteRecipe(
             @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
             @PathVariable("id") id: Int
