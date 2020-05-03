@@ -5,5 +5,6 @@ data class RecipeDto(
         val description: String,
         val preparationTime: String,
         val instructions: String,
-        val categories: Set<Int>
+        val categories: List<Int>,
+        val ingredients: List<UpdateRecipeIngredientDto>
 )

@@ -1,10 +1,14 @@
 package cz.st52530.recipes.service
 
 import cz.st52530.recipes.dao.CategoryRepository
+import cz.st52530.recipes.dao.IngredientRepository
+import cz.st52530.recipes.dao.RecipeIngredientRepository
 import cz.st52530.recipes.dao.RecipeRepository
 import cz.st52530.recipes.extensions.ensureNotBlank
 import cz.st52530.recipes.model.database.Recipe
+import cz.st52530.recipes.model.database.RecipeIngredient
 import cz.st52530.recipes.model.database.User
+import cz.st52530.recipes.model.database.id.RecipeIngredientIdentity
 import cz.st52530.recipes.model.dto.RecipeDto
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
@@ -14,7 +18,9 @@ import java.util.*
 @Service
 class RecipeService(
         private val recipeRepository: RecipeRepository,
-        private val categoryRepository: CategoryRepository
+        private val categoryRepository: CategoryRepository,
+        private val ingredientRepository: IngredientRepository,
+        private val recipeIngredientRepository: RecipeIngredientRepository
 ) : IRecipeService {
 
     override fun getByUser(user: User): List<Recipe> {
@@ -31,9 +37,21 @@ class RecipeService(
     }
 
     override fun addRecipe(data: RecipeDto, currentUser: User): Recipe {
-        val categories = categoryRepository.findAllByIdIn(data.categories).toSet()
+        val categories = categoryRepository.findAllByIdIn(data.categories)
+        if (categories.size != data.categories.size) {
+            throw IllegalArgumentException("Category was invalid!")
+        }
         if (categories.isEmpty()) {
             throw IllegalArgumentException("Category cannot be empty!")
+        }
+
+        val ingredientIds = data.ingredients.map { it.ingredientId }
+        val ingredients = ingredientRepository.findAllByIdIn(ingredientIds)
+        if (ingredients.size != data.ingredients.size) {
+            throw IllegalArgumentException("Ingredient was invalid!")
+        }
+        if (ingredients.isEmpty()) {
+            throw IllegalArgumentException("Ingredient cannot be empty!")
         }
 
         val recipeData = Recipe(
@@ -45,8 +63,18 @@ class RecipeService(
                 instructions = data.instructions.ensureNotBlank(),
                 preparationTime = data.preparationTime.ensureNotBlank()
         )
+        val cretedRecipe = recipeRepository.save(recipeData)
 
-        return recipeRepository.save(recipeData)
+        val recipeIngredients = data.ingredients.map { ingredientDto ->
+            val identity = RecipeIngredientIdentity(
+                    recipeId = cretedRecipe.id,
+                    ingredientId = ingredientDto.ingredientId
+            )
+            RecipeIngredient(identity, ingredientDto.amount)
+        }
+        recipeIngredientRepository.saveAll(recipeIngredients)
+
+        return cretedRecipe
     }
 
     override fun updateRecipe(recipeId: Int, data: RecipeDto, currentUser: User): Recipe {
@@ -57,7 +85,7 @@ class RecipeService(
         }
 
         // Remove not used categories.
-        val updatedCategories = recipe.categories.filter { data.categories.contains(it.id) }.toMutableSet()
+        val updatedCategories = recipe.categories.filter { data.categories.contains(it.id) }.toMutableList()
 
         // Create a list of new categories.
         val newCategories = data.categories.filter { newCategoryId ->

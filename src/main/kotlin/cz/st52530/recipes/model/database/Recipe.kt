@@ -50,5 +50,5 @@ data class Recipe(
                 joinColumns = [JoinColumn(name = "recipe_id", referencedColumnName = "id")],
                 inverseJoinColumns = [JoinColumn(name = "category_id", referencedColumnName = "id")]
         )
-        var categories: Set<Category>
+        var categories: List<Category>
 ) : BaseModel()
