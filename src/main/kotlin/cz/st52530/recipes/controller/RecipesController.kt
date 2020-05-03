@@ -24,7 +24,6 @@ class RecipesController(
     fun getUsersRecipes(@RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String): List<Recipe> {
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
-
         return recipesService.getByUser(user)
     }
 
@@ -35,13 +34,7 @@ class RecipesController(
     ): Recipe {
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
-        val recipe = recipesService.getById(id)
-
-        if (recipe.author.id != user.id) {
-            throw AccessDeniedException("Not allowed to read this recipe!")
-        }
-
-        return recipe
+        return recipesService.getById(id, user)
     }
 
     @PostMapping

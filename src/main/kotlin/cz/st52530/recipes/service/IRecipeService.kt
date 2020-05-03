@@ -8,11 +8,11 @@ interface IRecipeService {
 
     fun getByUser(user: User): List<Recipe>
 
-    fun getById(id: Int): Recipe
+    fun getById(id: Int, currentUser: User): Recipe
 
-    fun addRecipe(data: RecipeDto, author: User): Recipe
+    fun addRecipe(data: RecipeDto, currentUser: User): Recipe
 
-    fun updateRecipe(recipeId: Int, data: RecipeDto, author: User): Recipe
+    fun updateRecipe(recipeId: Int, data: RecipeDto, currentUser: User): Recipe
 
-    fun deleteRecipe(recipeId: Int, author: User)
+    fun deleteRecipe(recipeId: Int, currentUser: User)
 }

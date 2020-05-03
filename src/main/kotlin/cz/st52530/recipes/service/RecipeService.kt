@@ -21,12 +21,16 @@ class RecipeService(
         return recipeRepository.findByAuthorOrderByCreatedAt(user)
     }
 
-    override fun getById(id: Int): Recipe {
+    override fun getById(id: Int, currentUser: User): Recipe {
         val recipe = recipeRepository.findById(id).orElseThrow()
+        // Only author can see the recipe.
+        if (recipe.author.id != currentUser.id) {
+            throw AccessDeniedException("Not allowed to see this recipe!")
+        }
         return recipe
     }
 
-    override fun addRecipe(data: RecipeDto, author: User): Recipe {
+    override fun addRecipe(data: RecipeDto, currentUser: User): Recipe {
         val categories = categoryRepository.findAllByIdIn(data.categories).toSet()
         if (categories.isEmpty()) {
             throw IllegalArgumentException("Category cannot be empty!")
@@ -34,7 +38,7 @@ class RecipeService(
 
         val recipeData = Recipe(
                 name = data.name.ensureNotBlank(),
-                author = author,
+                author = currentUser,
                 categories = categories,
                 createdAt = Date(),
                 description = data.description.ensureNotBlank(),
@@ -45,10 +49,10 @@ class RecipeService(
         return recipeRepository.save(recipeData)
     }
 
-    override fun updateRecipe(recipeId: Int, data: RecipeDto, author: User): Recipe {
+    override fun updateRecipe(recipeId: Int, data: RecipeDto, currentUser: User): Recipe {
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can update the recipe.
-        if (recipe.author.id != author.id) {
+        if (recipe.author.id != currentUser.id) {
             throw AccessDeniedException("Not allowed to change this recipe!")
         }
 
@@ -85,10 +89,10 @@ class RecipeService(
         return recipeRepository.save(recipe)
     }
 
-    override fun deleteRecipe(recipeId: Int, author: User) {
+    override fun deleteRecipe(recipeId: Int, currentUser: User) {
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
-        // Only author can update the recipe.
-        if (recipe.author.id != author.id) {
+        // Only author can delete the recipe.
+        if (recipe.author.id != currentUser.id) {
             throw AccessDeniedException("Not allowed to delete this recipe!")
         }
         recipeRepository.delete(recipe)
