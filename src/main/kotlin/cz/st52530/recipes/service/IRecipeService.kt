@@ -10,5 +10,7 @@ interface IRecipeService {
 
     fun getById(id: Int): Recipe
 
-    fun addRecipe(data: RecipeDto, author: User)
+    fun addRecipe(data: RecipeDto, author: User): Recipe
+
+    fun updateRecipe(recipeId: Int, data: RecipeDto, author: User): Recipe
 }

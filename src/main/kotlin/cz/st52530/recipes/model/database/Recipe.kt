@@ -10,26 +10,26 @@ data class Recipe(
                 nullable = false,
                 length = 45
         )
-        val name: String,
+        var name: String,
 
         @Column(
                 nullable = false,
                 length = 1000
         )
-        val description: String,
+        var description: String,
 
         @Column(
                 nullable = false,
                 length = 45,
                 name = "preparation_time"
         )
-        val preparationTime: String,
+        var preparationTime: String,
 
         @Lob
         @Column(
                 nullable = false
         )
-        val instructions: String,
+        var instructions: String,
 
         @Column(
                 name = "created_at",
@@ -50,5 +50,5 @@ data class Recipe(
                 joinColumns = [JoinColumn(name = "recipe_id", referencedColumnName = "id")],
                 inverseJoinColumns = [JoinColumn(name = "category_id", referencedColumnName = "id")]
         )
-        val categories: Set<Category>
+        var categories: Set<Category>
 ) : BaseModel()

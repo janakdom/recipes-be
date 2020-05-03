@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface CategoryRepository : JpaRepository<Category, Int> {
 
-    fun findAllByIdIn(ids: Set<Int>): List<Category>
+    fun findAllByIdIn(ids: Collection<Int>): List<Category>
 }

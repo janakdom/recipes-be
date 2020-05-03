@@ -48,9 +48,20 @@ class RecipesController(
     fun addRecipe(
             @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
             @RequestBody body: RecipeDto
-    ) {
+    ): Recipe {
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
-        recipesService.addRecipe(body, user)
+        return recipesService.addRecipe(body, user)
+    }
+
+    @PutMapping("{id}")
+    fun updateRecipe(
+            @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
+            @RequestBody body: RecipeDto,
+            @PathVariable("id") id: Int
+    ): Recipe {
+        val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
+        val user = userService.getUserByUsername(username)
+        return recipesService.updateRecipe(id, body, user)
     }
 }
