@@ -64,4 +64,14 @@ class RecipesController(
         val user = userService.getUserByUsername(username)
         return recipesService.updateRecipe(id, body, user)
     }
+
+    @DeleteMapping("{id}")
+    fun deleteRecipe(
+            @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
+            @PathVariable("id") id: Int
+    ) {
+        val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
+        val user = userService.getUserByUsername(username)
+        recipesService.deleteRecipe(id, user)
+    }
 }

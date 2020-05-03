@@ -13,4 +13,6 @@ interface IRecipeService {
     fun addRecipe(data: RecipeDto, author: User): Recipe
 
     fun updateRecipe(recipeId: Int, data: RecipeDto, author: User): Recipe
+
+    fun deleteRecipe(recipeId: Int, author: User)
 }

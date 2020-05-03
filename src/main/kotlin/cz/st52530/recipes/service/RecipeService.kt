@@ -84,4 +84,13 @@ class RecipeService(
 
         return recipeRepository.save(recipe)
     }
+
+    override fun deleteRecipe(recipeId: Int, author: User) {
+        val recipe = recipeRepository.findById(recipeId).orElseThrow()
+        // Only author can update the recipe.
+        if (recipe.author.id != author.id) {
+            throw AccessDeniedException("Not allowed to delete this recipe!")
+        }
+        recipeRepository.delete(recipe)
+    }
 }
