@@ -11,7 +11,7 @@ class CategoryService(
 ) : ICategoryService {
 
     override fun getAll(): List<Category> {
-        return categoryRepository.findAll()
+        return categoryRepository.findAllByOrderByName()
     }
 
     override fun getById(id: Int): Category {

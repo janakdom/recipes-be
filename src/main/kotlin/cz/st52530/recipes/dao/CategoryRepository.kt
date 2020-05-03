@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query
 
 interface CategoryRepository : JpaRepository<Category, Int> {
 
+    fun findAllByOrderByName(): List<Category>
+
     fun findAllByIdIn(ids: Collection<Int>): List<Category>
 
     @Query("UPDATE category SET name=?2 WHERE id = ?1")
