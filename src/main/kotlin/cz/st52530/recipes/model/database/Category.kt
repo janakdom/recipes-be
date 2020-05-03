@@ -11,5 +11,5 @@ data class Category(
                 length = 45,
                 unique = true
         )
-        val name: String
+        var name: String
 ) : BaseModel()

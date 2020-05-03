@@ -10,8 +10,4 @@ interface CategoryRepository : JpaRepository<Category, Int> {
     fun findAllByOrderByName(): List<Category>
 
     fun findAllByIdIn(ids: Collection<Int>): List<Category>
-
-    @Modifying
-    @Query("UPDATE category SET name=?2 WHERE id = ?1")
-    fun updateName(id: Int, name: String): Category
 }

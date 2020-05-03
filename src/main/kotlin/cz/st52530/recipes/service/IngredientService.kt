@@ -24,7 +24,9 @@ class IngredientService(
     }
 
     override fun updateIngredient(id: Int, ingredient: UpdateIngredientDto): Ingredient {
-        return ingredientRepository.updateName(id, ingredient.name)
+        val entity = getById(id)
+        entity.name = ingredient.name
+        return ingredientRepository.save(entity)
     }
 
     override fun deleteIngredient(id: Int) {

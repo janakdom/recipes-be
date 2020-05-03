@@ -26,7 +26,9 @@ class CategoryService(
     }
 
     override fun updateCategory(id: Int, category: UpdateCategoryDto): Category {
-        return categoryRepository.updateName(id, category.name)
+        val entity = getById(id)
+        entity.name = category.name
+        return categoryRepository.save(entity)
     }
 
     override fun deleteCategory(id: Int) {
