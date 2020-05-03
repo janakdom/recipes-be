@@ -4,6 +4,7 @@ import cz.st52530.recipes.service.IUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -53,6 +54,9 @@ class WebSecurityConfig(
                 "/swagger-ui/**",
                 "/swagger"
         )
+        // Enable cors.
+        httpSecurity.cors()
+
         // We don't need CSRF for this example
         httpSecurity.csrf().disable()
                 .authorizeRequests()
