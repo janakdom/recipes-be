@@ -5,11 +5,13 @@ import cz.st52530.recipes.dao.IngredientRepository
 import cz.st52530.recipes.dao.RecipeIngredientRepository
 import cz.st52530.recipes.dao.RecipeRepository
 import cz.st52530.recipes.extensions.ensureNotBlank
+import cz.st52530.recipes.model.database.Category
 import cz.st52530.recipes.model.database.Recipe
 import cz.st52530.recipes.model.database.RecipeIngredient
 import cz.st52530.recipes.model.database.User
 import cz.st52530.recipes.model.database.id.RecipeIngredientIdentity
 import cz.st52530.recipes.model.dto.RecipeDto
+import cz.st52530.recipes.model.dto.UpdateRecipeIngredientDto
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import java.lang.IllegalStateException
@@ -84,11 +86,36 @@ class RecipeService(
             throw AccessDeniedException("Not allowed to change this recipe!")
         }
 
+        val updatedCategories = getUpdatedCategoriesForRecipe(recipe, data.categories)
+
+        recipe.run {
+            name = data.name.ensureNotBlank()
+            description = data.description.ensureNotBlank()
+            instructions = data.instructions.ensureNotBlank()
+            preparationTime = data.preparationTime.ensureNotBlank()
+            categories = updatedCategories
+        }
+
+        updateRecipeIngredients(recipe, data.ingredients)
+
+        return recipeRepository.save(recipe)
+    }
+
+    /**
+     * Validates [allCategoryIds] and returns list of category objects for DB.
+     * @param recipe existing recipe to update
+     * @param allCategoryIds new category IDs for this recipe
+     * @return a list of category objects matching [allCategoryIds].
+     */
+    private fun getUpdatedCategoriesForRecipe(
+            recipe: Recipe,
+            allCategoryIds: List<Int>
+    ): List<Category> {
         // Remove not used categories.
-        val updatedCategories = recipe.categories.filter { data.categories.contains(it.id) }.toMutableList()
+        val updatedCategories = recipe.categories.filter { allCategoryIds.contains(it.id) }.toMutableList()
 
         // Create a list of new categories.
-        val newCategories = data.categories.filter { newCategoryId ->
+        val newCategories = allCategoryIds.filter { newCategoryId ->
             updatedCategories.none { it.id == newCategoryId }
         }
 
@@ -106,15 +133,47 @@ class RecipeService(
             throw IllegalStateException("Categories cannot become empty!")
         }
 
-        recipe.run {
-            name = data.name.ensureNotBlank()
-            description = data.description.ensureNotBlank()
-            instructions = data.instructions.ensureNotBlank()
-            preparationTime = data.preparationTime.ensureNotBlank()
-            categories = updatedCategories
+        return updatedCategories
+    }
+
+    private fun updateRecipeIngredients(
+            recipe: Recipe,
+            newIngredients: List<UpdateRecipeIngredientDto>
+    ) {
+        val currentIngredients = recipeIngredientRepository.findAllByIdentityRecipeId(recipe.id)
+
+        // Remove not used ingredients.
+        val removedIngredients = currentIngredients.filterNot { ingredient ->
+            newIngredients.any { it.ingredientId == ingredient.identity.ingredientId }
         }
 
-        return recipeRepository.save(recipe)
+        var updatedRecipeIngredients = currentIngredients - removedIngredients
+        // Update existing ingredients.
+        updatedRecipeIngredients = updatedRecipeIngredients.map { current ->
+            val newData = newIngredients.first { it.ingredientId == current.identity.ingredientId }
+            RecipeIngredient(current.identity, newData.amount)
+        }
+
+        // Add new ingredients.
+        val newData = newIngredients.filterNot {  dto ->
+            updatedRecipeIngredients.any { it.identity.ingredientId == dto.ingredientId }
+        }.map { dto ->
+            val identity = RecipeIngredientIdentity(
+                    ingredientId = dto.ingredientId,
+                    recipeId = recipe.id
+            )
+            RecipeIngredient(identity, dto.amount)
+        }
+
+        if (newData.isEmpty() && updatedRecipeIngredients.isEmpty()) {
+            throw IllegalStateException("Ingredients cannot become empty!")
+        }
+
+        // Physically remove data after all checks have passed.
+        recipeIngredientRepository.deleteAll(removedIngredients)
+
+        // Store result in database.
+        recipeIngredientRepository.saveAll(updatedRecipeIngredients + newData)
     }
 
     override fun deleteRecipe(recipeId: Int, currentUser: User) {
