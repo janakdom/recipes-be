@@ -5,12 +5,11 @@ import cz.st52530.recipes.dao.IngredientRepository
 import cz.st52530.recipes.dao.RecipeIngredientRepository
 import cz.st52530.recipes.dao.RecipeRepository
 import cz.st52530.recipes.extensions.ensureNotBlank
-import cz.st52530.recipes.model.database.Category
-import cz.st52530.recipes.model.database.Recipe
-import cz.st52530.recipes.model.database.RecipeIngredient
-import cz.st52530.recipes.model.database.User
+import cz.st52530.recipes.model.database.*
 import cz.st52530.recipes.model.database.id.RecipeIngredientIdentity
 import cz.st52530.recipes.model.dto.RecipeDto
+import cz.st52530.recipes.model.dto.RecipeIngredientDto
+import cz.st52530.recipes.model.dto.UpdateRecipeDto
 import cz.st52530.recipes.model.dto.UpdateRecipeIngredientDto
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
@@ -29,16 +28,20 @@ class RecipeService(
         return recipeRepository.findByAuthorOrderByCreatedAt(user)
     }
 
-    override fun getById(id: Int, currentUser: User): Recipe {
+    override fun getById(id: Int, currentUser: User): RecipeDto {
         val recipe = recipeRepository.findById(id).orElseThrow()
         // Only author can see the recipe.
         if (recipe.author.id != currentUser.id) {
             throw AccessDeniedException("Not allowed to see this recipe!")
         }
-        return recipe
+        val recipeIngredients = recipeIngredientRepository.findAllByIdentityRecipeId(recipe.id)
+        return recipe.toDto(
+                recipeIngredients = recipeIngredients,
+                ingredients = null
+        )
     }
 
-    override fun addRecipe(data: RecipeDto, currentUser: User): Recipe {
+    override fun addRecipe(data: UpdateRecipeDto, currentUser: User): RecipeDto {
         val categories = categoryRepository.findAllByIdIn(data.categories)
         if (categories.size != data.categories.size) {
             throw IllegalArgumentException("Category was invalid!")
@@ -76,10 +79,13 @@ class RecipeService(
         }
         recipeIngredientRepository.saveAll(recipeIngredients)
 
-        return cretedRecipe
+        return cretedRecipe.toDto(
+                recipeIngredients = recipeIngredients,
+                ingredients = ingredients
+        )
     }
 
-    override fun updateRecipe(recipeId: Int, data: RecipeDto, currentUser: User): Recipe {
+    override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, currentUser: User): RecipeDto {
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can update the recipe.
         if (recipe.author.id != currentUser.id) {
@@ -96,9 +102,12 @@ class RecipeService(
             categories = updatedCategories
         }
 
-        updateRecipeIngredients(recipe, data.ingredients)
+        val recipeIngredients = updateRecipeIngredients(recipe, data.ingredients)
 
-        return recipeRepository.save(recipe)
+        return recipeRepository.save(recipe).toDto(
+                recipeIngredients = recipeIngredients,
+                ingredients = null
+        )
     }
 
     /**
@@ -136,10 +145,16 @@ class RecipeService(
         return updatedCategories
     }
 
+    /**
+     * Update recipe's ingredients in the database. Also return the updated recipe-ingredients list.
+     * @param recipe recipe to update
+     * @param newIngredients new ingredient data (data that are not in this list will be removed)
+     * @return updated list of recipe-ingredients
+     */
     private fun updateRecipeIngredients(
             recipe: Recipe,
             newIngredients: List<UpdateRecipeIngredientDto>
-    ) {
+    ): List<RecipeIngredient> {
         val currentIngredients = recipeIngredientRepository.findAllByIdentityRecipeId(recipe.id)
 
         // Remove not used ingredients.
@@ -155,7 +170,7 @@ class RecipeService(
         }
 
         // Add new ingredients.
-        val newData = newIngredients.filterNot {  dto ->
+        val newData = newIngredients.filterNot { dto ->
             updatedRecipeIngredients.any { it.identity.ingredientId == dto.ingredientId }
         }.map { dto ->
             val identity = RecipeIngredientIdentity(
@@ -173,7 +188,7 @@ class RecipeService(
         recipeIngredientRepository.deleteAll(removedIngredients)
 
         // Store result in database.
-        recipeIngredientRepository.saveAll(updatedRecipeIngredients + newData)
+        return recipeIngredientRepository.saveAll(updatedRecipeIngredients + newData)
     }
 
     override fun deleteRecipe(recipeId: Int, currentUser: User) {
@@ -183,5 +198,36 @@ class RecipeService(
             throw AccessDeniedException("Not allowed to delete this recipe!")
         }
         recipeRepository.delete(recipe)
+    }
+
+    private fun Recipe.toDto(
+            recipeIngredients: List<RecipeIngredient>,
+            ingredients: List<Ingredient>?
+    ): RecipeDto {
+        val internalIngredients: List<Ingredient>
+        internalIngredients = if (ingredients == null) {
+            val allIds = recipeIngredients.map { it.identity.ingredientId }
+            ingredientRepository.findAllByIdIn(allIds)
+        } else {
+            ingredients
+        }
+
+        val ingredientsDto = recipeIngredients.map { recipeIngredient ->
+            RecipeIngredientDto(
+                    ingredient = internalIngredients.first { it.id == recipeIngredient.identity.ingredientId },
+                    amount = recipeIngredient.amount
+            )
+        }
+
+        return RecipeDto(
+                id = id,
+                ingredients = ingredientsDto,
+                categories = categories,
+                name = name,
+                author = author,
+                description = description,
+                instructions = instructions,
+                preparationTime = preparationTime
+        )
     }
 }
