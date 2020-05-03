@@ -4,4 +4,7 @@ import cz.st52530.recipes.model.database.RecipeIngredient
 import cz.st52530.recipes.model.database.id.RecipeIngredientIdentity
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface RecipeIngredientRepository : JpaRepository<RecipeIngredient, RecipeIngredientIdentity>
+interface RecipeIngredientRepository : JpaRepository<RecipeIngredient, RecipeIngredientIdentity> {
+
+    fun findAllByIdentityRecipeId(recipeId: Int): List<RecipeIngredient>
+}
