@@ -9,6 +9,8 @@ import cz.st52530.recipes.service.IRecipeService
 import cz.st52530.recipes.service.IUserService
 import cz.st52530.recipes.util.JwtTokenUtil
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -21,10 +23,13 @@ class RecipesController(
 ) {
 
     @GetMapping
-    fun getUsersRecipes(@RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String): List<Recipe> {
+    fun getUsersRecipes(
+            @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
+            pageable: Pageable
+    ): Page<Recipe> {
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
-        return recipesService.getByUser(user)
+        return recipesService.getByUser(user, pageable)
     }
 
     @GetMapping("/{id}")
