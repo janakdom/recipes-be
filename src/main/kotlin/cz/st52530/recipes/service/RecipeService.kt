@@ -11,6 +11,8 @@ import cz.st52530.recipes.model.dto.RecipeDto
 import cz.st52530.recipes.model.dto.RecipeIngredientDto
 import cz.st52530.recipes.model.dto.UpdateRecipeDto
 import cz.st52530.recipes.model.dto.UpdateRecipeIngredientDto
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import java.lang.IllegalStateException
@@ -24,8 +26,8 @@ class RecipeService(
         private val recipeIngredientRepository: RecipeIngredientRepository
 ) : IRecipeService {
 
-    override fun getByUser(user: User): List<Recipe> {
-        return recipeRepository.findByAuthorOrderByCreatedAt(user)
+    override fun getByUser(user: User, pageable: Pageable): Page<Recipe> {
+        return recipeRepository.findAllByAuthor(user, pageable)
     }
 
     override fun getById(id: Int, currentUser: User): RecipeDto {
