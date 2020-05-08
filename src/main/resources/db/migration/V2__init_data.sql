@@ -43,6 +43,27 @@ INSERT INTO `recipe` (`id`, `name`, `description`, `created_at`, `author_id`, `p
 INSERT INTO `recipe` (`id`, `name`, `description`, `created_at`, `author_id`, `preparation_time`) VALUES ('9', 'České buchty 5', 'Nadýchané a voňavé kynuté buchty naplněné povidly ovoněnými kapkou rumu jsou nejlepší bohatě poprášené moučkovým cukrem.', now(), '1', '40 minut');
 INSERT INTO `recipe` (`id`, `name`, `description`, `created_at`, `author_id`, `preparation_time`) VALUES ('10', 'Hrachová polévka s domácími houstičkami 5', 'Popis', now(), '1', '120 minut');
 
+-- Recipe instructions!
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('1', 'V malé misce za pomoci lžíce rozetřete na hladkou kašičku rozdrobené droždí se lžící cukru. Přilijte polovinu teplého mléka (v mléce udržíte prst) a nechte na teplém místě vzejít kvásek, asi 10 minut.', '1');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('2', 'Do mísy kuchyňského robota nebo do velké mísy nasypte zbylý cukr, mouku, citronovou kůru a špetku soli, vše promíchejte. Přilijte vzešlý kvásek, zbylé mléko, rozpuštěné máslo a vejce. Hákem za nízké rychlosti nebo vařečkou vypracujte hladké měkké těsto. Zpracovávejte ho alespoň 10 minut.', '1');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('3', 'Jinou mísu vytřete olejem a přendejte do ní těsto a vytvořte z něj bochánek. Zakryjte utěrkou a nechte v pokojové teplotě kynout minimálně hodinu a půl. Povidla nechte v pokojové teplotě povolit a metlou promíchejte s tuzemákem. Pekáč vylijte rozpuštěným máslem. Troubu předehřejte na 200 °C.', '1');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('4', 'Těsto vyklopte na lehce pomoučněnou plochu a rozdělte na 12 (16 či 20) stejných dílů. Každý roztáhněte na placku a doprostřed dejte lžíci povidel. Okraje opatrně spojte nad povidly tak, aby vznikla kulatá buchta. Obalte ji v másle v pekáči a pokračujte s ostatními kousky. Skládejte je těsně vedle sebe (3 x 4, 4 x 4 nebo 5 x 4). Zakryjte je utěrkou a nechte ještě 20 minut kynout.', '1');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('17', 'Do předehřáté trouby vložte buchty, teplotu snižte na 180 °C a pečte dozlatova, asi 30 minut. Mezitím promíchejte rozpuštěné máslo s tuzemákem a smetanou. Hotové horké buchty směsí potřete a vychladlé pocukrujte.', '1');
+
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('13', 'Hrách vsypte na cedník s malými oky a dobře propláchněte pod tekoucí vodou. Vsypte do hrnce, zalijte studenou vodou a nechte několik hodin, případně přes noc, bobtnat. Pokud se všechna voda nevsákla, slijte ji a do hrnce přilijte čerstvou tak, aby byl hrách potopený. Uveďte do varu a pak na mírném plameni povařte doměkka, což podle stáří a tvrdosti hrachu trvá zhruba tři čtvrtě hodiny, ale někdy i hodinu a půl.', '2');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('14', 'Povařený hrách rozmixujte a chcete-li polévku opravdu sametovou, prolisujte ji přes jemné síto, čímž odstraníte nepříjemné slupky. V malém kastrůlku rozehřejte máslo, poprašte moukou, zapražte a s trochou studené vody rozmíchejte na hladkou kašičku. Jíšku přilijte k prolisovanému hrachu, dolijte trochu vody, aby nebyla polévka příliš kašovitá, a s jíškou ještě čtvrt hodiny povařte. Vmíchejte smetanu, polévku dobře dochuťte a podávejte ozdobenou bylinkami a doplněnou křupavými domácími houstičkami.', '2');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('15', 'Na housky prosejte mouku do mísy a promíchejte s droždím. Osolte, přilijte olej, mléko a 250 ml vlažné vody. Pomocí elektrického hnětače asi 5 minut zpracovávejte na hladké těsto. Přikryté je nechte na teplém místě asi 50 minut kynout.', '2');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('16', 'Těsto znovu na pomoučněné pracovní ploše prohněťte, vytvarujte z něho váleček a rozkrájejte jej na dvanáct kousků. Opět rozválejte jako válečky a splétejte do tvaru housky. Konce zahrňte dospodu a houstičky nechte asi 15 minut dokynout na plechu pokrytém pečicím papírem. Pak je potřené vodou a posypané pečte v troubě předehřáté na 200 °C zhruba 30 minut.', '2');
+
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('5', 'Postup', '3');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('6', 'Postup', '4');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('7', 'Postup', '5');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('8', 'Postup', '6');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('9', 'Postup', '7');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('10', 'Postup', '8');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('11', 'Postup', '9');
+INSERT INTO `recipe_instruction` (`id`, `text`, `recipe_id`) VALUES ('12', 'Postup', '10');
+
 -- Recipes + categories.
 INSERT INTO `recipe_category` (`recipe_id`, `category_id`) VALUES ('1', '7');
 INSERT INTO `recipe_category` (`recipe_id`, `category_id`) VALUES ('2', '2');
