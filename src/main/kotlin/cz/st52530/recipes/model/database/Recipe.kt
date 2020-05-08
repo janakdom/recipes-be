@@ -1,6 +1,6 @@
 package cz.st52530.recipes.model.database
 
-import cz.st52530.recipes.model.database.base.BaseModel
+import cz.st52530.recipes.model.database.base.BaseEntity
 import java.util.*
 import javax.persistence.*
 
@@ -25,11 +25,10 @@ data class Recipe(
         )
         var preparationTime: String,
 
-        @Lob
-        @Column(
-                nullable = false
+        @OneToMany(
+                mappedBy = "recipeId"
         )
-        var instructions: String,
+        var instructions: List<Instruction>,
 
         @Column(
                 name = "created_at",
@@ -51,4 +50,4 @@ data class Recipe(
                 inverseJoinColumns = [JoinColumn(name = "category_id", referencedColumnName = "id")]
         )
         var categories: List<Category>
-) : BaseModel()
+) : BaseEntity()

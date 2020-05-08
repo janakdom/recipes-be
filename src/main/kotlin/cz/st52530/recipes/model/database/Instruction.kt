@@ -4,12 +4,17 @@ import cz.st52530.recipes.model.database.base.BaseEntity
 import javax.persistence.Column
 import javax.persistence.Entity
 
-@Entity(name = "category")
-data class Category(
+@Entity(name = "recipe_instruction")
+data class Instruction(
         @Column(
                 nullable = false,
-                length = 45,
-                unique = true
+                length = 1000
         )
-        var name: String
+        var text: String,
+
+        @Column(
+                nullable = false,
+                name = "recipe_id"
+        )
+        val recipeId: Int
 ) : BaseEntity()
