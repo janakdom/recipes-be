@@ -44,6 +44,10 @@ class RecipeService(
     }
 
     override fun addRecipe(data: UpdateRecipeDto, currentUser: User): RecipeDto {
+        if (data.instructions.isEmpty()) {
+            throw IllegalArgumentException("Instructions cannot be empty!")
+        }
+
         val categories = categoryRepository.findAllByIdIn(data.categories)
         if (categories.size != data.categories.size) {
             throw IllegalArgumentException("Category was invalid!")
@@ -67,7 +71,7 @@ class RecipeService(
                 categories = categories,
                 createdAt = Date(),
                 description = data.description.ensureNotBlank(),
-                instructions = data.instructions.ensureNotBlank(),
+                instructions = data.instructions,
                 preparationTime = data.preparationTime.ensureNotBlank()
         )
         val cretedRecipe = recipeRepository.save(recipeData)
@@ -88,6 +92,10 @@ class RecipeService(
     }
 
     override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, currentUser: User): RecipeDto {
+        if (data.instructions.isEmpty()) {
+            throw IllegalArgumentException("Instructions cannot be empty!")
+        }
+
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can update the recipe.
         if (recipe.author.id != currentUser.id) {
@@ -99,7 +107,7 @@ class RecipeService(
         recipe.run {
             name = data.name.ensureNotBlank()
             description = data.description.ensureNotBlank()
-            instructions = data.instructions.ensureNotBlank()
+            instructions = data.instructions
             preparationTime = data.preparationTime.ensureNotBlank()
             categories = updatedCategories
         }
