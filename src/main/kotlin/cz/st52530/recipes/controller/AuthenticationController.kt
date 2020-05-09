@@ -26,7 +26,7 @@ class AuthenticationController(
         val userDetails: UserDetails = userService.loadUserByUsername(authenticationRequest.username)
 
         val token = jwtTokenUtil.generateToken(userDetails)
-        return LoginResponse(token)
+        return LoginResponse(token, userService.getUserByUsername(authenticationRequest.username))
     }
 
     @Throws(Exception::class)
