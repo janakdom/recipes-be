@@ -1,5 +1,6 @@
 package cz.st52530.recipes.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import cz.st52530.recipes.config.SWAGGER_AUTH_KEY
 import cz.st52530.recipes.model.database.Recipe
 import cz.st52530.recipes.model.dto.RecipeDto
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/recipes")
@@ -21,6 +23,10 @@ class RecipesController(
         private val recipesService: IRecipeService,
         private val jwtTokenUtil: JwtTokenUtil
 ) {
+
+    private val mapper by lazy {
+        ObjectMapper()
+    }
 
     @GetMapping
     fun getUsersRecipes(
@@ -45,11 +51,13 @@ class RecipesController(
     @PostMapping
     fun addRecipe(
             @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
-            @RequestBody body: UpdateRecipeDto
+            @RequestParam(name = "recipe") model: String,
+            @RequestParam(name = "file", required = false) file: MultipartFile
     ): RecipeDto {
+        val recipe: UpdateRecipeDto = mapper.readValue(model, UpdateRecipeDto::class.java)
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
-        return recipesService.addRecipe(body, user)
+        return recipesService.addRecipe(recipe, user)
     }
 
     @PutMapping("/{id}")

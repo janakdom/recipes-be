@@ -17,4 +17,11 @@ data class Instruction(
                 name = "recipe_id"
         )
         val recipeId: Int
-) : BaseEntity()
+) : BaseEntity() {
+
+    // Empty constructor for custom deserialization.
+    constructor() : this(
+            recipeId = 0,
+            text = ""
+    )
+}

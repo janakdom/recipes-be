@@ -9,4 +9,14 @@ data class UpdateRecipeDto(
         val instructions: List<Instruction>,
         val categories: List<Int>,
         val ingredients: List<UpdateRecipeIngredientDto>
-)
+) {
+    // Empty constructor for custom deserialization.
+    constructor() : this(
+            name = "",
+            description = "",
+            preparationTime = "",
+            instructions = emptyList(),
+            ingredients = emptyList(),
+            categories = emptyList()
+    )
+}
