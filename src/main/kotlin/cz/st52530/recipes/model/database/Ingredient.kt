@@ -1,6 +1,6 @@
 package cz.st52530.recipes.model.database
 
-import cz.st52530.recipes.model.database.base.BaseModel
+import cz.st52530.recipes.model.database.base.BaseEntity
 import javax.persistence.Column
 import javax.persistence.Entity
 
@@ -12,4 +12,4 @@ data class Ingredient(
                 unique = true
         )
         var name: String
-) : BaseModel()
+) : BaseEntity()

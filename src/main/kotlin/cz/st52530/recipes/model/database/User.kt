@@ -1,7 +1,7 @@
 package cz.st52530.recipes.model.database
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import cz.st52530.recipes.model.database.base.BaseModel
+import cz.st52530.recipes.model.database.base.BaseEntity
 import javax.persistence.Column
 import javax.persistence.Entity
 
@@ -28,4 +28,4 @@ data class User(
                 length = 45
         )
         val displayName: String?
-) : BaseModel()
+) : BaseEntity()

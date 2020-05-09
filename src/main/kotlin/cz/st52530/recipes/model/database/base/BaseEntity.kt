@@ -6,7 +6,7 @@ import javax.persistence.Id
 import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
-abstract class BaseModel {
+abstract class BaseEntity {
 
     /**
      * Initialized with default value so we don't need to pass it through a constructor.
