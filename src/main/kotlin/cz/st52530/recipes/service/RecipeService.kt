@@ -43,10 +43,7 @@ class RecipeService(
     }
 
     override fun addRecipe(data: UpdateRecipeDto, currentUser: User): RecipeDto {
-        if (data.instructions.isEmpty()) {
-            throw IllegalArgumentException("Instructions cannot be empty!")
-        }
-
+        // Validate categories.
         val categories = categoryRepository.findAllByIdIn(data.categories)
         if (categories.size != data.categories.size) {
             throw IllegalArgumentException("Category was invalid!")
@@ -55,6 +52,7 @@ class RecipeService(
             throw IllegalArgumentException("Category cannot be empty!")
         }
 
+        // Validate ingredients.
         val ingredientIds = data.ingredients.map { it.ingredientId }
         val ingredients = ingredientRepository.findAllByIdIn(ingredientIds)
         if (ingredients.size != data.ingredients.size) {
@@ -64,13 +62,18 @@ class RecipeService(
             throw IllegalArgumentException("Ingredient cannot be empty!")
         }
 
+        // Validate instructions.
+        if (data.instructions.isEmpty()) {
+            throw IllegalArgumentException("Instructions cannot be empty!")
+        }
+
         val recipeData = Recipe(
                 name = data.name.ensureNotBlank(),
                 author = currentUser,
                 categories = categories,
                 createdAt = Date(),
                 description = data.description.ensureNotBlank(),
-                instructions = data.instructions,
+                instructions = emptyList(),
                 preparationTime = data.preparationTime.ensureNotBlank()
         )
         val createdRecipe = recipeRepository.save(recipeData)
@@ -84,10 +87,16 @@ class RecipeService(
         }
         recipeIngredientRepository.saveAll(recipeIngredients)
 
+        // Map recipe ID to instructions.
+        var newInstructions = data.instructions.map {
+            Instruction(it.text, createdRecipe.id)
+        }
+        newInstructions = instructionsRepository.saveAll(newInstructions)
+
         return createdRecipe.toDto(
                 recipeIngredients = recipeIngredients,
                 ingredients = ingredients,
-                updatedInstructions = createdRecipe.instructions // TODO!
+                updatedInstructions = newInstructions
         )
     }
 
