@@ -1,9 +1,6 @@
 package cz.st52530.recipes.service
 
-import cz.st52530.recipes.dao.CategoryRepository
-import cz.st52530.recipes.dao.IngredientRepository
-import cz.st52530.recipes.dao.RecipeIngredientRepository
-import cz.st52530.recipes.dao.RecipeRepository
+import cz.st52530.recipes.dao.*
 import cz.st52530.recipes.extensions.ensureNotBlank
 import cz.st52530.recipes.model.database.*
 import cz.st52530.recipes.model.database.id.RecipeIngredientIdentity
@@ -23,7 +20,8 @@ class RecipeService(
         private val recipeRepository: RecipeRepository,
         private val categoryRepository: CategoryRepository,
         private val ingredientRepository: IngredientRepository,
-        private val recipeIngredientRepository: RecipeIngredientRepository
+        private val recipeIngredientRepository: RecipeIngredientRepository,
+        private val instructionsRepository: InstructionsRepository
 ) : IRecipeService {
 
     override fun getByUser(user: User, pageable: Pageable): Page<Recipe> {
@@ -39,7 +37,8 @@ class RecipeService(
         val recipeIngredients = recipeIngredientRepository.findAllByIdentityRecipeId(recipe.id)
         return recipe.toDto(
                 recipeIngredients = recipeIngredients,
-                ingredients = null
+                ingredients = null,
+                updatedInstructions = recipe.instructions
         )
     }
 
@@ -74,28 +73,25 @@ class RecipeService(
                 instructions = data.instructions,
                 preparationTime = data.preparationTime.ensureNotBlank()
         )
-        val cretedRecipe = recipeRepository.save(recipeData)
+        val createdRecipe = recipeRepository.save(recipeData)
 
         val recipeIngredients = data.ingredients.map { ingredientDto ->
             val identity = RecipeIngredientIdentity(
-                    recipeId = cretedRecipe.id,
+                    recipeId = createdRecipe.id,
                     ingredientId = ingredientDto.ingredientId
             )
             RecipeIngredient(identity, ingredientDto.amount)
         }
         recipeIngredientRepository.saveAll(recipeIngredients)
 
-        return cretedRecipe.toDto(
+        return createdRecipe.toDto(
                 recipeIngredients = recipeIngredients,
-                ingredients = ingredients
+                ingredients = ingredients,
+                updatedInstructions = createdRecipe.instructions // TODO!
         )
     }
 
     override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, currentUser: User): RecipeDto {
-        if (data.instructions.isEmpty()) {
-            throw IllegalArgumentException("Instructions cannot be empty!")
-        }
-
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can update the recipe.
         if (recipe.author.id != currentUser.id) {
@@ -107,17 +103,39 @@ class RecipeService(
         recipe.run {
             name = data.name.ensureNotBlank()
             description = data.description.ensureNotBlank()
-            instructions = data.instructions
             preparationTime = data.preparationTime.ensureNotBlank()
             categories = updatedCategories
         }
 
         val recipeIngredients = updateRecipeIngredients(recipe, data.ingredients)
+        val updatedInstructions = updateRecipeInstructions(recipe, data.instructions)
+        recipe.instructions = updatedInstructions
 
         return recipeRepository.save(recipe).toDto(
                 recipeIngredients = recipeIngredients,
-                ingredients = null
+                ingredients = null,
+                updatedInstructions = updatedInstructions
         )
+    }
+
+    private fun updateRecipeInstructions(
+            recipe: Recipe,
+            instructionsDto: List<Instruction>
+    ): List<Instruction> {
+        if (instructionsDto.isEmpty()) {
+            throw IllegalArgumentException("Instructions cannot be empty!")
+        }
+        val instructionHasInvalidRecipe = instructionsDto.any { it.recipeId != recipe.id }
+        if (instructionHasInvalidRecipe) {
+            throw IllegalArgumentException("Instruction cannot be for a different recipe!")
+        }
+
+        val removedInstructions = recipe.instructions.filterNot { instruction ->
+            instructionsDto.any { instruction.id == it.id }
+        }
+
+        instructionsRepository.deleteAll(removedInstructions)
+        return instructionsRepository.saveAll(instructionsDto)
     }
 
     /**
@@ -212,7 +230,8 @@ class RecipeService(
 
     private fun Recipe.toDto(
             recipeIngredients: List<RecipeIngredient>,
-            ingredients: List<Ingredient>?
+            ingredients: List<Ingredient>?,
+            updatedInstructions: List<Instruction>
     ): RecipeDto {
         val internalIngredients: List<Ingredient>
         internalIngredients = if (ingredients == null) {
@@ -236,7 +255,7 @@ class RecipeService(
                 name = name,
                 author = author,
                 description = description,
-                instructions = instructions,
+                instructions = updatedInstructions,
                 preparationTime = preparationTime
         )
     }
