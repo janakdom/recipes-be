@@ -15,7 +15,9 @@ interface IRecipeService {
 
     fun addRecipe(data: UpdateRecipeDto, currentUser: User): RecipeDto
 
-    fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, currentUser: User): RecipeDto
+    fun updateRecipeImage(recipe: RecipeDto, imageUrl: String, currentUser: User): RecipeDto
+
+    fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, imageUrl: String?, currentUser: User): RecipeDto
 
     fun deleteRecipe(recipeId: Int, currentUser: User)
 }

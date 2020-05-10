@@ -25,6 +25,13 @@ data class Recipe(
         )
         var preparationTime: String,
 
+        @Column(
+                nullable = true,
+                length = 255,
+                name = "image_url"
+        )
+        var imageUrl: String?,
+
         @OneToMany(
                 mappedBy = "recipeId"
         )

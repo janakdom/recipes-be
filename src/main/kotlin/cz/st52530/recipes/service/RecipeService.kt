@@ -74,7 +74,8 @@ class RecipeService(
                 createdAt = Date(),
                 description = data.description.ensureNotBlank(),
                 instructions = emptyList(),
-                preparationTime = data.preparationTime.ensureNotBlank()
+                preparationTime = data.preparationTime.ensureNotBlank(),
+                imageUrl = null
         )
         val createdRecipe = recipeRepository.save(recipeData)
 
@@ -100,7 +101,20 @@ class RecipeService(
         )
     }
 
-    override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, currentUser: User): RecipeDto {
+    override fun updateRecipeImage(recipe: RecipeDto, imageUrl: String, currentUser: User): RecipeDto {
+        val recipeEntitiy = recipeRepository.findById(recipe.id).orElseThrow()
+        // Only author can update the recipe.
+        if (recipeEntitiy.author.id != currentUser.id) {
+            throw AccessDeniedException("Not allowed to change this recipe!")
+        }
+
+        recipeEntitiy.imageUrl = imageUrl
+        recipeRepository.save(recipeEntitiy)
+
+        return recipe.copy(imageUrl = imageUrl)
+    }
+
+    override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, imageUrl: String?, currentUser: User): RecipeDto {
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can update the recipe.
         if (recipe.author.id != currentUser.id) {
@@ -114,6 +128,7 @@ class RecipeService(
             description = data.description.ensureNotBlank()
             preparationTime = data.preparationTime.ensureNotBlank()
             categories = updatedCategories
+            this.imageUrl = imageUrl
         }
 
         val recipeIngredients = updateRecipeIngredients(recipe, data.ingredients)
@@ -265,7 +280,8 @@ class RecipeService(
                 author = author,
                 description = description,
                 instructions = updatedInstructions,
-                preparationTime = preparationTime
+                preparationTime = preparationTime,
+                imageUrl = imageUrl
         )
     }
 }
