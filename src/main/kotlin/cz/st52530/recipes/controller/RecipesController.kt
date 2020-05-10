@@ -80,8 +80,8 @@ class RecipesController(
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
 
-        val imageUrl = if (file != null) imageHandlingUtil.uploadImage(file, id) else null
-        return recipesService.updateRecipe(id, recipe, imageUrl, user)
+        val newImageUrl = if (file != null) imageHandlingUtil.uploadImage(file, id) else null
+        return recipesService.updateRecipe(id, recipe, newImageUrl, user)
     }
 
     @DeleteMapping("/{id}")

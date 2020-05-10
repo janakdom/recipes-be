@@ -114,7 +114,7 @@ class RecipeService(
         return recipe.copy(imageUrl = imageUrl)
     }
 
-    override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, imageUrl: String?, currentUser: User): RecipeDto {
+    override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, newImageUrl: String?, currentUser: User): RecipeDto {
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can update the recipe.
         if (recipe.author.id != currentUser.id) {
@@ -128,7 +128,10 @@ class RecipeService(
             description = data.description.ensureNotBlank()
             preparationTime = data.preparationTime.ensureNotBlank()
             categories = updatedCategories
-            this.imageUrl = imageUrl
+            // Only update image when there is a new one uploaded.
+            if (newImageUrl != null) {
+                this.imageUrl = newImageUrl
+            }
         }
 
         val recipeIngredients = updateRecipeIngredients(recipe, data.ingredients)
