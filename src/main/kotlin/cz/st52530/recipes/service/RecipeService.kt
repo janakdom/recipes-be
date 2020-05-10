@@ -42,7 +42,7 @@ class RecipeService(
         )
     }
 
-    override fun addRecipe(data: UpdateRecipeDto, imageUrl: String?, currentUser: User): RecipeDto {
+    override fun addRecipe(data: UpdateRecipeDto, currentUser: User): RecipeDto {
         // Validate categories.
         val categories = categoryRepository.findAllByIdIn(data.categories)
         if (categories.size != data.categories.size) {
@@ -75,7 +75,7 @@ class RecipeService(
                 description = data.description.ensureNotBlank(),
                 instructions = emptyList(),
                 preparationTime = data.preparationTime.ensureNotBlank(),
-                imageUrl = imageUrl
+                imageUrl = null
         )
         val createdRecipe = recipeRepository.save(recipeData)
 
@@ -99,6 +99,19 @@ class RecipeService(
                 ingredients = ingredients,
                 updatedInstructions = newInstructions
         )
+    }
+
+    override fun updateRecipeImage(recipe: RecipeDto, imageUrl: String, currentUser: User): RecipeDto {
+        val recipeEntitiy = recipeRepository.findById(recipe.id).orElseThrow()
+        // Only author can update the recipe.
+        if (recipeEntitiy.author.id != currentUser.id) {
+            throw AccessDeniedException("Not allowed to change this recipe!")
+        }
+
+        recipeEntitiy.imageUrl = imageUrl
+        recipeRepository.save(recipeEntitiy)
+
+        return recipe.copy(imageUrl = imageUrl)
     }
 
     override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, imageUrl: String?, currentUser: User): RecipeDto {

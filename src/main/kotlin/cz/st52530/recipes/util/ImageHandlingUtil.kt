@@ -13,17 +13,15 @@ class ImageHandlingUtil(
     /**
      * @return URL of uploaded file
      */
-    fun uploadImage(image: MultipartFile, recipeId: Int? = null): String {
+    fun uploadImage(image: MultipartFile, recipeId: Int): String {
         // Prepare file to upload.
         val tempFile = File("/tmp/image")
         image.transferTo(tempFile)
 
         val params = mutableMapOf(
-                "folder" to "recipes"
+                "folder" to "recipes",
+                "public_id" to recipeId.toString()
         )
-        if (recipeId != null) {
-            params["public_id"] = recipeId.toString()
-        }
         val uploadResult = cloudinary.uploader().upload(tempFile, params)
         return uploadResult.getValue("secure_url") as String
     }

@@ -60,8 +60,13 @@ class RecipesController(
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
 
-        val imageUrl = if (file != null) imageHandlingUtil.uploadImage(file) else null
-        return recipesService.addRecipe(recipe, imageUrl, user)
+        var createdRecipe = recipesService.addRecipe(recipe, user)
+        if (file != null) {
+            val imageUrl = imageHandlingUtil.uploadImage(file, createdRecipe.id)
+            createdRecipe = recipesService.updateRecipeImage(createdRecipe, imageUrl, user)
+        }
+
+        return createdRecipe
     }
 
     @PutMapping("/{id}")
