@@ -38,6 +38,14 @@
         </dependency>
         <!-- endregion -->
 
+        <!-- region Image server -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.26.0</version>
+        </dependency>
+        <!-- endregion -->
+
         <!-- region Kotlin -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

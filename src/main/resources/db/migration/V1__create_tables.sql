@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `recipe`
     `created_at`       DATETIME      NOT NULL,
     `author_id`        INT           NOT NULL,
     `preparation_time` VARCHAR(45)   NOT NULL,
+    `image_url` VARCHAR(255) NULL,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC),
     INDEX `fk_recipe_user_idx` (`author_id` ASC),

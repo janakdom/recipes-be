@@ -9,6 +9,7 @@ data class RecipeDto(
         val name: String,
         val description: String,
         val preparationTime: String,
+        val imageUrl: String?,
         val instructions: List<Instruction>,
         val author: User,
         val categories: List<Category>,

@@ -42,7 +42,7 @@ class RecipeService(
         )
     }
 
-    override fun addRecipe(data: UpdateRecipeDto, currentUser: User): RecipeDto {
+    override fun addRecipe(data: UpdateRecipeDto, imageUrl: String?, currentUser: User): RecipeDto {
         // Validate categories.
         val categories = categoryRepository.findAllByIdIn(data.categories)
         if (categories.size != data.categories.size) {
@@ -74,7 +74,8 @@ class RecipeService(
                 createdAt = Date(),
                 description = data.description.ensureNotBlank(),
                 instructions = emptyList(),
-                preparationTime = data.preparationTime.ensureNotBlank()
+                preparationTime = data.preparationTime.ensureNotBlank(),
+                imageUrl = imageUrl
         )
         val createdRecipe = recipeRepository.save(recipeData)
 
@@ -265,7 +266,8 @@ class RecipeService(
                 author = author,
                 description = description,
                 instructions = updatedInstructions,
-                preparationTime = preparationTime
+                preparationTime = preparationTime,
+                imageUrl = imageUrl
         )
     }
 }
