@@ -101,7 +101,7 @@ class RecipeService(
         )
     }
 
-    override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, currentUser: User): RecipeDto {
+    override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, imageUrl: String?, currentUser: User): RecipeDto {
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can update the recipe.
         if (recipe.author.id != currentUser.id) {
@@ -115,6 +115,7 @@ class RecipeService(
             description = data.description.ensureNotBlank()
             preparationTime = data.preparationTime.ensureNotBlank()
             categories = updatedCategories
+            this.imageUrl = imageUrl
         }
 
         val recipeIngredients = updateRecipeIngredients(recipe, data.ingredients)

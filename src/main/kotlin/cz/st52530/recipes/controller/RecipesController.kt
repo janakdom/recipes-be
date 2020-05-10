@@ -1,6 +1,5 @@
 package cz.st52530.recipes.controller
 
-import com.cloudinary.Cloudinary
 import com.fasterxml.jackson.databind.ObjectMapper
 import cz.st52530.recipes.config.SWAGGER_AUTH_KEY
 import cz.st52530.recipes.model.database.Recipe
@@ -16,12 +15,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 
 @RestController
 @RequestMapping("/api/recipes")
@@ -74,12 +67,16 @@ class RecipesController(
     @PutMapping("/{id}")
     fun updateRecipe(
             @RequestHeader(JwtRequestFilter.AUTHORIZATION_HEADER) tokenHeader: String,
-            @RequestBody body: UpdateRecipeDto,
-            @PathVariable("id") id: Int
+            @PathVariable("id") id: Int,
+            @RequestParam(name = "recipe") model: String,
+            @RequestParam(name = "file", required = false) file: MultipartFile?
     ): RecipeDto {
+        val recipe: UpdateRecipeDto = mapper.readValue(model, UpdateRecipeDto::class.java)
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
-        return recipesService.updateRecipe(id, body, user)
+
+        val imageUrl = if (file != null) imageHandlingUtil.uploadImage(file, id) else null
+        return recipesService.updateRecipe(id, recipe, imageUrl, user)
     }
 
     @DeleteMapping("/{id}")
