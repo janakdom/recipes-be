@@ -4,10 +4,7 @@ import cz.st52530.recipes.dao.*
 import cz.st52530.recipes.extensions.ensureNotBlank
 import cz.st52530.recipes.model.database.*
 import cz.st52530.recipes.model.database.id.RecipeIngredientIdentity
-import cz.st52530.recipes.model.dto.RecipeDto
-import cz.st52530.recipes.model.dto.RecipeIngredientDto
-import cz.st52530.recipes.model.dto.UpdateRecipeDto
-import cz.st52530.recipes.model.dto.UpdateRecipeIngredientDto
+import cz.st52530.recipes.model.dto.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.AccessDeniedException
@@ -286,5 +283,9 @@ class RecipeService(
                 preparationTime = preparationTime,
                 imageUrl = imageUrl
         )
+    }
+
+    override fun findRecipes(params: SearchDto, author: User): List<Recipe> {
+        return recipeRepository.findAllByAuthorAndNameContaining(author, params.name)
     }
 }
