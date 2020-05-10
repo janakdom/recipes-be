@@ -11,16 +11,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@RequestMapping("/api/authenticate")
 class AuthenticationController(
         private val authenticationManager: AuthenticationManager,
         private val jwtTokenUtil: JwtTokenUtil,
         private val userService: IUserService
 ) {
 
-    @PostMapping("/api/authenticate")
+    @PostMapping
     fun createAuthenticationToken(@RequestBody authenticationRequest: LoginRequest): LoginResponse {
         authenticate(authenticationRequest.username, authenticationRequest.password)
         val userDetails: UserDetails = userService.loadUserByUsername(authenticationRequest.username)
