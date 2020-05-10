@@ -87,5 +87,6 @@ class RecipesController(
         val username = jwtTokenUtil.getUsernameFromToken(jwtTokenUtil.extractBareToken(tokenHeader))
         val user = userService.getUserByUsername(username)
         recipesService.deleteRecipe(id, user)
+        imageHandlingUtil.deleteImage(id)
     }
 }

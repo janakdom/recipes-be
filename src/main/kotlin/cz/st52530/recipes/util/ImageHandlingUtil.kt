@@ -27,4 +27,8 @@ class ImageHandlingUtil(
         val uploadResult = cloudinary.uploader().upload(tempFile, params)
         return uploadResult.getValue("secure_url") as String
     }
+
+    fun deleteImage(recipeId: Int) {
+        cloudinary.uploader().destroy("recipes/$recipeId", emptyMap<String, String>())
+    }
 }
