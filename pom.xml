@@ -17,6 +17,7 @@
     <properties>
         <java.version>13</java.version>
         <kotlin.version>1.3.71</kotlin.version>
+        <geb.version>3.3</geb.version>
     </properties>
 
     <dependencies>
@@ -145,18 +146,43 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <scope>test</scope>
-            <version>1.9.4</version>
-        </dependency>
-
         <!-- In memory DB -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- UI testing-->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.141.59</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>3.8.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.gebish</groupId>
+            <artifactId>geb-core</artifactId>
+            <version>${geb.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.gebish</groupId>
+            <artifactId>geb-junit4</artifactId>
+            <version>${geb.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.0</version>
             <scope>test</scope>
         </dependency>
         <!-- endregion -->
