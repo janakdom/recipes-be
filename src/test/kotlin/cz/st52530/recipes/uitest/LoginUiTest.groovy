@@ -52,4 +52,25 @@ class LoginUiTest {
             wait.until(ExpectedConditions.titleIs("Seznam receptů | Rodinné recepty"))
         }
     }
+
+    @Test
+    void givenWrongLoginDetails_thenLoginFails() {
+        Browser.drive {
+            go frontendUrl
+            assert title == "Přihlášení | Rodinné recepty"
+
+            // Type username with jQuery-like syntax.
+            $("input[name='username']").value("username")
+
+            // Type password using core WebDriver API
+            driver.findElement(By.name("password")).sendKeys("password")
+
+            // Click on login button by xpath expression.
+            driver.findElement(By.xpath("//button[*[contains(text(),'Přihlásit')]]")).click()
+
+            WebDriverWait wait = new WebDriverWait(driver, 5)
+            wait.until(ExpectedConditions.textToBe(By.id("password-helper-text"), "Špatné jméno nebo heslo."))
+            assert title == "Přihlášení | Rodinné recepty"
+        }
+    }
 }
