@@ -4,11 +4,10 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import cz.st52530.recipes.dao.*
-import cz.st52530.recipes.model.database.Category
-import cz.st52530.recipes.model.database.Recipe
-import cz.st52530.recipes.model.database.User
+import cz.st52530.recipes.model.database.*
 import cz.st52530.recipes.model.dto.RecipeDto
 import cz.st52530.recipes.model.dto.UpdateRecipeDto
+import cz.st52530.recipes.model.dto.UpdateRecipeIngredientDto
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
@@ -157,10 +156,75 @@ class RecipeServiceTest {
     }
 
     @Test
-    fun xx() {
+    fun givenWrongIgredients_thenAddRecipeThrowsException() {
+        val mockCategories = listOf(
+                Category("Category 1")
+        )
+        whenever(categoryRepository.findAllByIdIn(any())).thenReturn(mockCategories)
+        whenever(ingredientRepository.findAllByIdIn(any())).thenReturn(emptyList())
 
+        val ingredients = listOf(UpdateRecipeIngredientDto(1, "Ingredient"))
+        val addData = UpdateRecipeDto(
+                name = "Name",
+                ingredients = ingredients,
+                categories = listOf(1),
+                preparationTime = "Prep time",
+                description = "Description",
+                instructions = emptyList()
+        )
+
+        assertThrows(IllegalArgumentException::class.java) {
+            underTest.addRecipe(addData, currentUser)
+        }
     }
 
+    @Test
+    fun givenEmptyIgredients_thenAddRecipeThrowsException() {
+        val mockCategories = listOf(
+                Category("Category 1")
+        )
+        whenever(categoryRepository.findAllByIdIn(any())).thenReturn(mockCategories)
+        whenever(ingredientRepository.findAllByIdIn(any())).thenReturn(emptyList())
+
+        val addData = UpdateRecipeDto(
+                name = "Name",
+                ingredients = emptyList(),
+                categories = listOf(1),
+                preparationTime = "Prep time",
+                description = "Description",
+                instructions = emptyList()
+        )
+
+        assertThrows(IllegalArgumentException::class.java) {
+            underTest.addRecipe(addData, currentUser)
+        }
+    }
+
+    @Test
+    fun givenEmptyInstructions_thenAddRecipeThrowsException() {
+        val mockCategories = listOf(
+                Category("Category 1")
+        )
+        whenever(categoryRepository.findAllByIdIn(any())).thenReturn(mockCategories)
+        val mockIngredients = listOf(
+                Ingredient("Ingredient 1")
+        )
+        whenever(ingredientRepository.findAllByIdIn(any())).thenReturn(mockIngredients)
+
+        val ingredients = listOf(UpdateRecipeIngredientDto(1, "Ingredient"))
+        val addData = UpdateRecipeDto(
+                name = "Name",
+                ingredients = ingredients,
+                categories = listOf(1),
+                preparationTime = "Prep time",
+                description = "Description",
+                instructions = emptyList()
+        )
+
+        assertThrows(IllegalArgumentException::class.java) {
+            underTest.addRecipe(addData, currentUser)
+        }
+    }
     @Test
     fun updateRecipeImage() {
     }
