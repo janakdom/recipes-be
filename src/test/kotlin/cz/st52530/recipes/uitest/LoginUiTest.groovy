@@ -1,5 +1,7 @@
 package cz.st52530.recipes.uitest
 
+import cz.st52530.recipes.model.database.User
+import cz.st52530.recipes.testutil.Creator
 import geb.Browser
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
@@ -8,6 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
@@ -15,25 +18,38 @@ import org.springframework.boot.test.context.SpringBootTest
 class LoginUiTest {
 
     @Value("\${recipes.frontend.url}")
-    String frontendUrl
+    private String frontendUrl
+
+    @Autowired
+    private Creator creator
+
+    @Autowired
+    private PasswordEncoder encoder
 
     @Test
-    void loginTest() {
+    void givenCorrectLoginDetails_thenLoginIsSuccessful() {
+        // Prepare user.
+        creator.saveEntity(new User(
+                "username",
+                encoder.encode("password"),
+                "My Name"
+        ))
+
         Browser.drive {
             go frontendUrl
-            assert title == "Login | UPCE"
+            assert title == "Přihlášení | Rodinné recepty"
 
-            // a) typing text into input using GEB jQuery-like API
-            $("input[name='username']").value("devglan")
+            // Type username with jQuery-like syntax.
+            $("input[name='username']").value("username")
 
-            // a) typing text into input using core WebDriver API
-            driver.findElement(By.name("password")).sendKeys("devglan")
+            // Type password using core WebDriver API
+            driver.findElement(By.name("password")).sendKeys("password")
 
-            driver.findElement(By.xpath("//button[*[contains(text(),'Login')]]")).click()
+            // Click on login button by xpath expression.
+            driver.findElement(By.xpath("//button[*[contains(text(),'Přihlásit')]]")).click()
 
-            WebDriverWait wait = new WebDriverWait(driver, 10);
-            wait.until(ExpectedConditions.titleIs("List user | UPCE"))
-
+            WebDriverWait wait = new WebDriverWait(driver, 5)
+            wait.until(ExpectedConditions.titleIs("Seznam receptů | Rodinné recepty"))
         }
     }
 }
