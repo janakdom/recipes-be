@@ -225,19 +225,57 @@ class RecipeServiceTest {
             underTest.addRecipe(addData, currentUser)
         }
     }
+
     @Test
-    fun updateRecipeImage() {
+    fun whenAttemptedByWrongUser_thenUpdateRecipeThrowsException() {
+        val wrongUser = mock<User>()
+        whenever(wrongUser.id).thenReturn(5)
+
+        val mockRecipe = Recipe(
+                author = currentUser,
+                imageUrl = "http://image.url",
+                categories = emptyList(),
+                preparationTime = "Preparation",
+                description = "Description",
+                name = "Name",
+                instructions = emptyList(),
+                createdAt = Date()
+        )
+        whenever(recipeRepository.findById(1)).thenReturn(Optional.of(mockRecipe))
+
+        val updateData = UpdateRecipeDto(
+                name = "Name",
+                ingredients = emptyList(),
+                categories = listOf(1),
+                preparationTime = "Prep time",
+                description = "Description",
+                instructions = emptyList()
+        )
+
+        assertThrows(AccessDeniedException::class.java) {
+            underTest.updateRecipe(1, updateData, null, wrongUser)
+        }
     }
 
     @Test
-    fun updateRecipe() {
-    }
+    fun whenAttemptedByWrongUser_thenDeleteRecipeThrowsException() {
+        val wrongUser = mock<User>()
+        whenever(wrongUser.id).thenReturn(5)
 
-    @Test
-    fun deleteRecipe() {
-    }
+        val mockRecipe = Recipe(
+                author = currentUser,
+                imageUrl = "http://image.url",
+                categories = emptyList(),
+                preparationTime = "Preparation",
+                description = "Description",
+                name = "Name",
+                instructions = emptyList(),
+                createdAt = Date()
+        )
+        whenever(recipeRepository.findById(1)).thenReturn(Optional.of(mockRecipe))
 
-    @Test
-    fun findRecipes() {
+        assertThrows(AccessDeniedException::class.java) {
+            underTest.deleteRecipe(1, wrongUser)
+        }
     }
 }
