@@ -1,5 +1,7 @@
 package cz.st52530.recipes.uitest
 
+import cz.st52530.recipes.model.database.Category
+import cz.st52530.recipes.model.database.Ingredient
 import cz.st52530.recipes.model.database.User
 import cz.st52530.recipes.testutil.Creator
 import geb.Browser
@@ -28,8 +30,7 @@ class AddRecipeUiTest {
 
     @Test
     void givenCorrectInformation_thenAddRecipeIsSuccessful() {
-        // TODO: Prepare categories + ingredients.
-
+        prepareTestData()
         login()
 
         // Navigate to Add Recipe page.
@@ -39,12 +40,21 @@ class AddRecipeUiTest {
             driver.findElement(By.linkText("PŘIDAT RECEPT")).click()
             WebDriverWait wait = new WebDriverWait(driver, 5)
             wait.until(ExpectedConditions.titleIs("Přidání receptu | Rodinné recepty"))
+
+            // Submit button should be disabled as the required information is not filled in.
+            def button = driver.findElement(By.xpath("//button[span[text()='Uložit']]"))
+            assert button.getAttribute("class").contains("disabled")
         }
 
         // Actually add the recipe!
         Browser.drive {
-            driver.findElement(By.xpath("/html/body/div[@id='root']/div[@class='MuiBox-root MuiBox-root-5']/main[@class='MuiContainer-root makeStyles-mainContainer-2 MuiContainer-maxWidthLg']/div[@class='MuiContainer-root makeStyles-root-177 MuiContainer-maxWidthMd']/ul[@class='makeStyles-root-268']/li/div[@class='MuiButtonBase-root MuiChip-root makeStyles-chip-269 MuiChip-colorPrimary MuiChip-clickableColorPrimary MuiChip-deletableColorPrimary MuiChip-outlined MuiChip-outlinedPrimary MuiChip-clickable MuiChip-deletable']")).click()
-            driver.findElement(By.linkText("Přidat kategorii")).click()
+            // Type basic info
+            driver.findElement(By.name("recipeName")).sendKeys("Thai chicken curry")
+            driver.findElement(By.name("preparationTime")).sendKeys("30 minutes")
+
+            // Select category.
+            driver.findElement(By.xpath("//span[text()='Přidat kategorii']")).click()
+            driver.findElement(By.xpath("//li[text()='Chicken category']")).click()
         }
     }
 
@@ -72,5 +82,26 @@ class AddRecipeUiTest {
             WebDriverWait wait = new WebDriverWait(driver, 5)
             wait.until(ExpectedConditions.titleIs("Seznam receptů | Rodinné recepty"))
         }
+    }
+
+    private void prepareTestData() {
+        // Prepare categories.
+        creator.saveEntity(new Category(
+                name: "Chicken category"
+        ))
+        creator.saveEntity(new Category(
+                name: "Another category"
+        ))
+
+        // Prepare ingredients.
+        creator.saveEntity(new Ingredient(
+                name: "Chicken"
+        ))
+        creator.saveEntity(new Ingredient(
+                name: "Pork"
+        ))
+        creator.saveEntity(new Ingredient(
+                name: "Another ingredient"
+        ))
     }
 }
