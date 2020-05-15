@@ -95,7 +95,7 @@ public class Creator {
       // if (deleteOthers) {
       //   dao.deleteAllInBatch();
       // }
-      dao.save(entity);
+      entity = (T) dao.save(entity);
     } catch (Exception e) {
       throw new IllegalStateException("Problem", e);
     }
