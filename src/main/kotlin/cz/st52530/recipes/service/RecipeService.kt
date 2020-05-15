@@ -25,6 +25,7 @@ class RecipeService(
         return recipeRepository.findAllByAuthor(user, pageable)
     }
 
+    @Throws(AccessDeniedException::class)
     override fun getById(id: Int, currentUser: User): RecipeDto {
         val recipe = recipeRepository.findById(id).orElseThrow()
         // Only author can see the recipe.
@@ -39,6 +40,7 @@ class RecipeService(
         )
     }
 
+    @Throws(IllegalArgumentException::class)
     override fun addRecipe(data: UpdateRecipeDto, currentUser: User): RecipeDto {
         // Validate categories.
         val categories = categoryRepository.findAllByIdIn(data.categories)
@@ -98,6 +100,7 @@ class RecipeService(
         )
     }
 
+    @Throws(AccessDeniedException::class)
     override fun updateRecipeImage(recipe: RecipeDto, imageUrl: String, currentUser: User): RecipeDto {
         val recipeEntitiy = recipeRepository.findById(recipe.id).orElseThrow()
         // Only author can update the recipe.
@@ -111,6 +114,7 @@ class RecipeService(
         return recipe.copy(imageUrl = imageUrl)
     }
 
+    @Throws(AccessDeniedException::class)
     override fun updateRecipe(recipeId: Int, data: UpdateRecipeDto, newImageUrl: String?, currentUser: User): RecipeDto {
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can update the recipe.
@@ -142,6 +146,7 @@ class RecipeService(
         )
     }
 
+    @Throws(IllegalArgumentException::class)
     private fun updateRecipeInstructions(
             recipe: Recipe,
             instructionsDto: List<Instruction>
@@ -168,6 +173,7 @@ class RecipeService(
      * @param allCategoryIds new category IDs for this recipe
      * @return a list of category objects matching [allCategoryIds].
      */
+    @Throws(IllegalArgumentException::class, IllegalStateException::class)
     private fun getUpdatedCategoriesForRecipe(
             recipe: Recipe,
             allCategoryIds: List<Int>
@@ -203,6 +209,7 @@ class RecipeService(
      * @param newIngredients new ingredient data (data that are not in this list will be removed)
      * @return updated list of recipe-ingredients
      */
+    @Throws(IllegalStateException::class)
     private fun updateRecipeIngredients(
             recipe: Recipe,
             newIngredients: List<UpdateRecipeIngredientDto>
@@ -243,6 +250,7 @@ class RecipeService(
         return recipeIngredientRepository.saveAll(updatedRecipeIngredients + newData)
     }
 
+    @Throws(AccessDeniedException::class)
     override fun deleteRecipe(recipeId: Int, currentUser: User) {
         val recipe = recipeRepository.findById(recipeId).orElseThrow()
         // Only author can delete the recipe.
