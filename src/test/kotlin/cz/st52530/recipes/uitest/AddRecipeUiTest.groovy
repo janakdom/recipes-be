@@ -55,6 +55,34 @@ class AddRecipeUiTest {
             // Select category.
             driver.findElement(By.xpath("//span[text()='Přidat kategorii']")).click()
             driver.findElement(By.xpath("//li[text()='Chicken category']")).click()
+
+            // Type description
+            driver.findElement(By.cssSelector("textarea[name='description']")).sendKeys("Recipe description")
+
+            // Select ingredients.
+            driver.findElement(By.name("ingredient")).sendKeys("Ch")
+            // Wait for ingredients to load.
+            WebDriverWait wait = new WebDriverWait(driver, 5)
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[text()='Chicken']")))
+            driver.findElement(By.xpath("//li[text()='Chicken']")).click()
+            driver.findElement(By.xpath("//span[text()='Přidat ingredienci']")).click()
+            driver.findElement(By.xpath("//input[@name='amount']")).sendKeys("1 kg")
+
+            // Type instructions.
+            driver.findElement(By.xpath("//span[text()='Přidat další']")).click()
+            driver.findElement(By.name("instruction")).sendKeys("Instructions part 1")
+
+            // Submit.
+            def submitButton = driver.findElement(By.xpath("//button[span[text()='Uložit']]"))
+            assert !submitButton.getAttribute("class").contains("disabled")
+            submitButton.click()
+        }
+
+        // Assert success.
+        Browser.drive {
+            WebDriverWait wait = new WebDriverWait(driver, 5)
+            wait.until(ExpectedConditions.titleIs("Thai chicken curry | Rodinné recepty"))
+            assert driver.findElement(By.xpath("//h1[text()='Thai chicken curry']")).displayed
         }
     }
 
