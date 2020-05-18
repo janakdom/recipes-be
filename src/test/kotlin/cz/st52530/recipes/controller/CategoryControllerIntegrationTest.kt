@@ -1,32 +1,24 @@
 package cz.st52530.recipes.controller
 
-import cz.st52530.recipes.dao.CategoryRepository
 import cz.st52530.recipes.model.database.Category
 import cz.st52530.recipes.testutil.Creator
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.NoSuchElementException
+import java.util.*
+import javax.transaction.Transactional
 
 @SpringBootTest
-class CategoryControllerTest {
+@Transactional
+class CategoryControllerIntegrationTest {
 
     @Autowired
     private lateinit var underTest: CategoryController
 
     @Autowired
-    private lateinit var categoryRepository: CategoryRepository
-
-    @Autowired
     private lateinit var creator: Creator
-
-    @AfterEach
-    fun cleanup() {
-        categoryRepository.deleteAll()
-        categoryRepository.flush()
-    }
 
     @Test
     fun givenNoCategoryExists_thenGetCategoriesReturnsEmptyList() {
