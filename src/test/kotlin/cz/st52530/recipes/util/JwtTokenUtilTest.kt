@@ -27,7 +27,7 @@ internal class JwtTokenUtilTest {
 
     @Test
     fun givenValidToken_thenExtractUsername() {
-        val token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJteVVzZXJuYW1lIiwiZXhwIjoxNTg5NzM4MjI5LCJpYXQiOjE1ODkxMzM0Mjl9.2RDQfFCeuXfKRWRc3ySAZBie9BWLtSDLn9okeMTY3tHlgIX4HG5NuE03bzwHPYzbSaU47dxL7F9MTrc5BH393w"
+        val token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJteVVzZXJuYW1lIiwiZXhwIjo2MTYyNTgzMzIwMCwiaWF0IjoxNTg5ODgxNTc4fQ.h8gIa46S7Ofhgn_6-Yh2gNuhQGz9O9FDfFbbKRXWm-HiFblIiT_PZJ0Fq5H2ebnOmtD08_ro3baryiiVH1gLQg"
         val result = underTest.getUsernameFromToken(token)
         assertEquals("myUsername", result)
     }
